@@ -76,7 +76,7 @@ static NSString * const GBCommandLineEndOfOptionsKey = @"end-of-options"; // thi
 	self.currentOptionsGroupOptions = nil;
 }
 
-- (void)registerOption:(NSString *)longOption shortcut:(char)shortOption requirement:(GBValueRequirements)requirement {
+- (void)registerOption:(NSString *)longOption shortcut:(char)shortOption requirement:(GBValueFlags)requirement {
 	// Register option data.
 	NSMutableDictionary *data = [NSMutableDictionary dictionary];
 	data[GBCommandLineLongOptionKey] = longOption;
@@ -102,7 +102,7 @@ static NSString * const GBCommandLineEndOfOptionsKey = @"end-of-options"; // thi
 	}
 }
 
-- (void)registerOption:(NSString *)longOption requirement:(GBValueRequirements)requirement {
+- (void)registerOption:(NSString *)longOption requirement:(GBValueFlags)requirement {
 	[self registerOption:longOption shortcut:0 requirement:requirement];
 }
 
@@ -136,7 +136,7 @@ static NSString * const GBCommandLineEndOfOptionsKey = @"end-of-options"; // thi
 }
 
 - (GBCommandLineParseBlock)simplifiedOptionsParserBlock {
-	return ^(GBParseFlags flags, NSString *argument, id value, BOOL *stop) {
+	return ^(GBParseFlag flags, NSString *argument, id value, BOOL *stop) {
 		switch (flags) {
 			case GBParseFlagUnknownOption:
 				gbfprintln(stderr, @"Unknown command line option %@, try --help!", argument);
@@ -218,7 +218,7 @@ static NSString * const GBCommandLineEndOfOptionsKey = @"end-of-options"; // thi
 		}
 		
 		NSString *name = nil;
-		GBParseFlags flags = GBParseFlagOption;
+		GBParseFlag flags = GBParseFlagOption;
 		
 		if (data == nil) {
 			// If no registered option matches given one, notify observer.
@@ -235,7 +235,7 @@ static NSString * const GBCommandLineEndOfOptionsKey = @"end-of-options"; // thi
 			name = data[GBCommandLineLongOptionKey];
 
 			// Prepare the value or notify about problem with it.
-			GBValueRequirements requirement = [data[GBCommandLineRequirementKey] unsignedIntegerValue];
+			GBValueFlags requirement = [data[GBCommandLineRequirementKey] unsignedIntegerValue];
 			switch (requirement) {
 				case GBValueRequired:
 					// Option requires value: check next option and if it "looks like" an option (i.e. starts with -- or - or is one of option group names), notify about missing value. Also notify about missing value if this is the last option. If we already have the value (via --name=value syntax), no need to search.
